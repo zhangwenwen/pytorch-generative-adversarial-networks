@@ -8,7 +8,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.autograd import Variable
-
+import matplotlib.pyplot as plt
 # Data params
 data_mean = 4
 data_stddev = 1.25
@@ -108,6 +108,15 @@ for epoch in range(num_epochs):
         d_fake_error = criterion(d_fake_decision, Variable(torch.zeros(1)))  # zeros = fake
         d_fake_error.backward()
         d_optimizer.step()     # Only optimizes D's parameters; changes based on stored gradients from backward()
+
+        #display the distributions of real data and fake data
+        if epoch%print_interval==0:
+            plt.clf()
+            (a, b) = np.histogram(d_real_data.data.numpy(), range(-10, 150 + 1))
+            plt.plot(range(-10, 150), a)
+            (a,b)=np.histogram(d_fake_data.data.numpy(),range(-10,151))
+            plt.plot(range(-10,150),a)
+            plt.pause(0.5)
 
     for g_index in range(g_steps):
         # 2. Train G on D's response (but DO NOT train D on these labels)
